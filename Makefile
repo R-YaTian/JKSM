@@ -51,6 +51,9 @@ APP_VERSION		:= v$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_MICRO)
 
 ifeq ($(NO_DRIVE),)
 	WITH_DRIVE := -DENABLE_DRIVE
+else
+	SOURCES := $(filter-out src/drive, $(SOURCES))
+	INCLUDES := $(filter-out inc/drive, $(INCLUDES))
 endif
 
 #---------------------------------------------------------------------------------

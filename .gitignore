@@ -16,3 +16,4 @@ adrivehelper/YY-Thunks
 Cargo.lock
 *.pot
 *.mo
+*.lst

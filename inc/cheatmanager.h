@@ -47,6 +47,7 @@
 
 #include "fs.h"
 
+#include <memory>
 #include <jtjson.h>
 #include <3ds.h>
 #include <stdio.h>
