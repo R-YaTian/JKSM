@@ -28,9 +28,9 @@ jobs:
         run: |
           git clone --recurse-submodules https://github.com/devkitPro/libctru.git
 
-      - name: Checkout latest citro2d commit
-        run: |
-          git clone --recurse-submodules https://github.com/devkitPro/citro2d.git
+      # - name: Checkout latest citro2d commit
+      #   run: |
+      #     git clone --recurse-submodules https://github.com/devkitPro/citro2d.git
 
       - name: Checkout latest libjtjson commit
         run: |
@@ -44,10 +44,10 @@ jobs:
           cd libctru/libctru
           make install -j$(nproc)
 
-      - name: Build and install citro2d
-        run: |
-          cd citro2d
-          catnip -T 3ds -S . -B build install
+      # - name: Build and install citro2d
+      #   run: |
+      #     cd citro2d
+      #     catnip -T 3ds -S . -B build install
 
       - name: Build and install libjtjson
         run: |

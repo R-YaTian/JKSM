@@ -18,8 +18,6 @@
 
 #pragma once
 
-#include <curl/curl.h>
-
 #include "drive/IDrive.h"
 #include "drive/curlfuncs.h"
 

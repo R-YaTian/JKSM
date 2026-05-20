@@ -922,7 +922,7 @@ msgstr "Reset save data"
 
 #: /e/SrcPri/TYSS/src/ui/ttl.cpp:279
 msgid "备份所有的用户存档(DS 游戏卡带除外)"
-msgstr "Backup all user saves (excluding DS game cartridges)"
+msgstr "Backup all user saves (excluding DS game cart)"
 
 #: /e/SrcPri/TYSS/src/ui/ttl.cpp:283
 msgid "备份所有的 GBAVC 存档"

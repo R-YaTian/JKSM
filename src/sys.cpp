@@ -21,7 +21,6 @@
 
 #include "sys.h"
 
-bool run = true;
 int8_t sys::threadCore = -2;
 bool sys::isNew3DS = false;
 bool sys::isInstalled = false;

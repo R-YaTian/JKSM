@@ -74,14 +74,14 @@ TYSS - 天涯的3DS存档工作室
 ## 许可证
 **根据 GNU GPLv3 许可证分发。 打开 [LICENSE](./LICENSE) 查看更多内容。**
 
-**Copyright © 2024-2025 R-YaTian.**
+**Copyright © 2024-2026 R-YaTian.**
 
 ## 致谢
 * [R-YaTian](https://github.com/R-YaTian)：主要开发者，项目所有者
 * [J-D-K](https://github.com/J-D-K) 提供原始的 [JKSM](https://github.com/J-D-K/JKSM) 版本
 * [TuxSH](https://github.com/tuxsh) 提供 [TWLSaveTool](https://github.com/TuxSH/TWLSaveTool)，从中获取了 SPI 相关代码
 * 所有 [Checkpoint](https://github.com/BernardoGiordano/Checkpoint) 和 [PKSM](https://github.com/FlagBrew/PKSM) 贡献者，某些代码实现已移植到 TYSS
-* WinterMute、fincs 和 [devkitPro](https://devkitpro.org/) 贡献者提供 devkitARM 和 [dkp-pacman](https://github.com/devkitPro/pacman/releases)
+* [WinterMute](https://github.com/WinterMute)、[fincs](https://github.com/fincs) 和 [devkitPro](https://devkitpro.org/) 贡献者提供 devkitARM 和 [libctru](https://github.com/devkitPro/libctru)
 * [Forget](https://github.com/James-Makoto) 进行测试并制作 TYSS 标志/图标
 * [FlagBrew](https://github.com/FlagBrew) 提供原始的 [Sharkive 金手指数据库](https://github.com/FlagBrew/Sharkive)
 * [天地人](https://github.com/realkkk)：[Sharkive 简中金手指数据库](https://github.com/R-YaTian/Sharkive) 主要翻译者

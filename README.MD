@@ -72,14 +72,14 @@ TYSS or RYaTian's Save Studio for 3DS.
 ## License
 **Distributed under the GNU GPLv3. See [LICENSE](./LICENSE) for more information.**
 
-**Copyright © 2024-2025 R-YaTian.**
+**Copyright © 2024-2026 R-YaTian.**
 
 ## Credits
 * [R-YaTian](https://github.com/R-YaTian): Main Developer
 * [J-D-K](https://github.com/J-D-K) for the original [JKSM](https://github.com/J-D-K/JKSM) version.
 * [TuxSH](https://github.com/tuxsh) for [TWLSaveTool](https://github.com/TuxSH/TWLSaveTool), from which SPI code has been taken.
 * All [Checkpoint](https://github.com/BernardoGiordano/Checkpoint) and [PKSM](https://github.com/FlagBrew/PKSM) contributors for some code that has been ported to TYSS.
-* WinterMute, fincs and [devkitPro](https://devkitpro.org/) contributors for devkitARM and [dkp-pacman](https://github.com/devkitPro/pacman/releases).
+* [WinterMute](https://github.com/WinterMute), [fincs](https://github.com/fincs) and [devkitPro](https://devkitpro.org/) contributors for devkitARM and [libctru](https://github.com/devkitPro/libctru).
 * [James-Makoto](https://github.com/James-Makoto) for testing and the TYSS logo/icon.
 * [FlagBrew](https://github.com/FlagBrew) for the original [Sharkive DB](https://github.com/FlagBrew/Sharkive).
 * [realworld](https://github.com/realkkk): Main Translator of [Sharkive DB CHS](https://github.com/R-YaTian/Sharkive).

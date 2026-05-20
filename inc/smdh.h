@@ -21,7 +21,7 @@
 
 #include <stdint.h>
 
-//Stolen from 3DS HB menu
+// Stolen from 3DS HB menu
 typedef struct
 {
     uint32_t magic;

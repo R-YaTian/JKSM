@@ -27,7 +27,7 @@
 
 namespace util
 {
-    enum datFmt
+    enum DateFmt
     {
         DATE_FMT_YMD,
         DATE_FMT_YDM

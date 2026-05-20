@@ -30,6 +30,7 @@
 extern int state;
 
 #ifdef ENABLE_DRIVE
+#include <curl/curl.h>
 static uint32_t *socBuffer;
 #endif
 
