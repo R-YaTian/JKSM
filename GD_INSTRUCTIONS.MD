@@ -1,36 +1,66 @@
 # <center> How to use Google Drive with TYSS </center>
 
-**Google only allows unverified apps to have up to 100 test users. Not only would this limit be filled within minutes, but each user has to manually added.**
+These steps create your own Google Drive OAuth credentials and a refresh token for TYSS.
 
+**Never share `drive.json`. Never commit real client secrets or refresh tokens.**
 
-1. Go to https://console.cloud.google.com/, if this is your first time, accept the terms and you should now have the dashboard in front of you.
-2. Click `CREATE PROJECT` on the next screen.<br><center><img src="https://i.imgur.com/42Wruo4.png" /></center>
-3. On the next screen name your project TYSS. Organization is not required. Click create.
-4. Give it a few seconds and the project should be created. Select TYSS if it hasn't been selected already.<center><img src="https://i.imgur.com/P1lXGea.png" /></center>
-5. On the left side, find APIs and Services and click Dashboard.<br><center><img src="https://i.imgur.com/Ve8NRVr.png" /></center>
-6. Once the dashboard loads, click `+ENABLE APIS AND SERVICES`.<br><center><img src="https://i.imgur.com/RzB8ChU.png" /></center>
-7. Scroll down a little and find Google Drive API under Google Workspace.<br><center><img src="https://i.imgur.com/cAC7h1r.png" /></center>
-8. Click on it and Click Enable on the next screen.
-9. On the next screen, Google should be informing you that you need to create credentials in order to use Drive. Click Create Credentials.<br><center><img src="https://i.imgur.com/gMyedT4.png" /></center>
-10. Under `Which API are you using?`, find `Cloud Storage API`. Under `What data will you be accessing?`, select `User data`. Click done.
-11. On the next screen, there should be a reminder to configure your OAuth Consent screen AKA your login screen. Click `CONFIGURE CONSENT SCREEN`.<br><center><img src="https://i.imgur.com/SGmUnPp.png" /></center>
-12. Select external and then create.
-13. Fill out the next screen. Only App name, user support email, and developer contact information are required. The rest can be left blank. Save and Continue.
-14. On the next screen, click `ADD OR REMOVE SCOPES`. Find `../auth/drive` or just type `https://www.googleapis.com/auth/drive` into `Manually add scopes`. Click update at the bottom. Save and Continue.
-15. Add yourself as a test user. Save and Continue.
-16. `BACK TO DASHBOARD`
-17. On the left under APIs and Services, click Credentials.<br><center><img src="https://i.imgur.com/iWD1GTk.png" /></center>
-18. On the next screen, click `+ CREATE_CREDENTIALS`. Select `OAuth Client ID`.<br><center><img src="https://i.imgur.com/ri3tuB7.png" /></center>
-19. On the next screen, under `Application Type`, select `Desktop App`. Click `Create`.
-20. You now have your Client ID and Client Secret. Copy and paste these somewhere for later. Almost done!
-21. You're going to need to login and get an authentication code for TYSS to exchange. This is only needed once. Afterwards, TYSS will use a refresh token so you do not have to log in every time you want to upload or download something. Replace `YOUR_CLIENT_ID_HERE` with your client ID obtained in the previous step: `https://accounts.google.com/o/oauth2/v2/auth?client_id=YOUR_CLIENT_ID_HERE&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&scope=https://www.googleapis.com/auth/drive`.
-22. At the end, you will be presented with a code. You will need this for the final step.
-23. On your 3DS's SD card, go to `SDMC:/TYSS`. Create a file named `drive.json`.
-24. Add these lines and save. You should be good to go now:
-```
-{
-    "driveClientID" : "YOUR_CLIENT_ID_HERE",
-    "driveClientSecret" : "YOU_CLIENT_SECRET_HERE",
-    "driveAuthCode" : "YOU_CODE_FROM_STEP_22_HERE"
-}
-```
+1. Go to https://console.cloud.google.com/ and create or select a project for TYSS.
+2. Go to `APIs and Services`, then `Library`.
+3. Search for `Google Drive API` and enable it.
+4. Open `Google Auth Platform` or `OAuth consent screen`.
+5. Configure the OAuth consent screen. For personal use, fill in the required app name, user support email, and developer contact email.
+6. Add the Drive scope:
+
+    ```
+    https://www.googleapis.com/auth/drive
+    ```
+
+7. If your OAuth app remains `External` and `Testing`, Google may expire refresh tokens for the Drive scope after 7 days. For personal use, publish the app to `In production` to avoid the testing-mode token expiry when Google allows it. Because the Drive scope may be sensitive or restricted, Google may still show an unverified app warning or require app verification.
+8. Go to `APIs and Services`, then `Credentials`.
+9. Click `+ CREATE CREDENTIALS`, then `OAuth client ID`.
+10. Set `Application type` to `Web application`. Do not use `Desktop app`.
+11. Add this exact `Authorized redirect URI`:
+
+    ```
+    https://developers.google.com/oauthplayground
+    ```
+
+12. Create the client and copy the Web OAuth client ID and client secret. Because `drive.json` is stored on the SD card, do not treat this client secret as confidential after copying it there.
+13. Open https://developers.google.com/oauthplayground.
+14. Click the gear icon and use these settings:
+    - `OAuth flow`: `Server-side`
+    - `Access type`: `Offline`
+    - `Force prompt`: `Consent Screen`
+    - Enable `Use your own OAuth credentials`
+    - Enter the Web OAuth client ID and client secret from Google Cloud
+15. In the scope box, enter:
+
+    ```
+    https://www.googleapis.com/auth/drive
+    ```
+
+16. Click `Authorize APIs` and sign in with the Google account you want TYSS to use.
+17. Click `Exchange authorization code for tokens`.
+18. Copy the `Refresh token`.
+19. On your 3DS's SD card, go to `SDMC:/TYSS`. Create a file named `drive.json`.
+20. Add these lines and save:
+
+    ```
+    {
+        "driveClientID": "YOUR_WEB_CLIENT_ID_HERE",
+        "driveClientSecret": "YOUR_WEB_CLIENT_SECRET_HERE",
+        "driveRefreshToken": "YOUR_REFRESH_TOKEN_HERE",
+        "driveInitOnBoot": true
+    }
+    ```
+
+Do not include `driveAuthCode` when using this method.
+
+`driveInitOnBoot` controls whether TYSS initializes Google Drive when TYSS starts and `drive.json` exists. If this key is omitted, the current default is `true`. Set it to `false` if you do not want Drive to initialize on startup.
+
+If `drive.json` is exposed, revoke the app's access from your Google Account, rotate the Web OAuth client secret in Google Cloud, and generate a new refresh token. Refresh tokens can also become invalid if you revoke app access, the token is unused for a long time, or too many refresh tokens are generated.
+
+## Troubleshooting
+
+- `invalid_client` usually means the client ID or client secret is wrong, the OAuth client was deleted, you are using the wrong Google Cloud project, or the client is not a `Web application` client.
+- `redirect_uri_mismatch` means `https://developers.google.com/oauthplayground` was not added exactly as an `Authorized redirect URI`.
