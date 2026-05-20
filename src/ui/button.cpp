@@ -1,6 +1,6 @@
 /*
  *  This file is part of TYSS.
- *  Copyright (C) 2024-2025 R-YaTian
+ *  Copyright (C) 2024-2026 R-YaTian
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

@@ -1,6 +1,6 @@
 /*
  *  This file is part of TYSS.
- *  Copyright (C) 2024-2025 R-YaTian
+ *  Copyright (C) 2024-2026 R-YaTian
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#include "spi.h"
+#include "ctr/spi.h"
 
 static const u32 knownJEDECS[] = {0x204012, 0x621600, 0x204013, 0x621100, 0x204014, 0x202017, 0x204017, 0x208013};
 

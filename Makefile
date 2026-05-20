@@ -33,8 +33,8 @@ include $(DEVKITARM)/3ds_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	TYSS
 BUILD		:=	build
-SOURCES		:=	src src/ui src/drive
-INCLUDES	:=	inc inc/ui inc/drive
+SOURCES		:=	src src/ui src/drive src/ctr
+INCLUDES	:=	inc inc/ui inc/drive inc/ctr
 GRAPHICS	:=	gfx
 ROMFS		:=	romfs
 GFXBUILD	:=	$(ROMFS)/gfx
