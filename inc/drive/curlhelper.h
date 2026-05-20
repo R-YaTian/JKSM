@@ -23,7 +23,7 @@
 
 #define HEADER_ERROR "ERROR"
 
-namespace curlFuncs
+namespace CurlHelper
 {
     size_t writeDataString(const char *buff, size_t sz, size_t cnt, void *u);
     size_t writeHeaders(const char *buff, size_t sz, size_t cnt, void *u);

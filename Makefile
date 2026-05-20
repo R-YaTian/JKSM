@@ -50,7 +50,7 @@ MAKEROM_VERARGS := -major $(VERSION_MAJOR) -minor $(VERSION_MINOR) -micro $(VERS
 APP_VERSION		:= v$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_MICRO)
 
 ifeq ($(NO_DRIVE),)
-	WITH_DRIVE := -DENABLE_DRIVE
+	WITH_DRIVE := -DENABLE_DRIVE -DCURL_NO_OLDIES=1
 else
 	SOURCES := $(filter-out src/drive, $(SOURCES))
 	INCLUDES := $(filter-out inc/drive, $(INCLUDES))
@@ -68,7 +68,7 @@ CFLAGS	:=	-g -Wall -O2 -mword-relocations -flto=auto \
 
 CFLAGS	+=	$(INCLUDE) -D__3DS__ $(WITH_DRIVE)
 
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -Wno-psabi -std=gnu++23
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -Wno-psabi -std=gnu++26
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
@@ -109,7 +109,7 @@ GFXFILES	:=	$(foreach dir,$(GRAPHICS),$(notdir $(wildcard $(dir)/*.t3s)))
 BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
 
 ifneq ($(NO_DRIVE),)
-	CPPFILES := $(filter-out gd.cpp adrive.cpp curlfuncs.cpp, $(CPPFILES))
+	CPPFILES := $(filter-out gd.cpp adrive.cpp curlhelper.cpp, $(CPPFILES))
 endif
 
 #---------------------------------------------------------------------------------

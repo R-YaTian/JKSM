@@ -18,38 +18,43 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <curl/curl.h>
 
-#include "drive/curlfuncs.h"
-#include "util.h"
+#include "drive/curlhelper.h"
 
-size_t curlFuncs::writeDataString(const char *buff, size_t sz, size_t cnt, void *u)
+size_t CurlHelper::writeDataString(const char *buff, size_t sz, size_t cnt, void *u)
 {
     std::string *str = (std::string *)u;
     str->append(buff, 0, sz * cnt);
     return sz * cnt;
 }
 
-size_t curlFuncs::writeHeaders(const char *buff, size_t sz, size_t cnt, void *u)
+size_t CurlHelper::writeHeaders(const char *buff, size_t sz, size_t cnt, void *u)
 {
     std::vector<std::string> *headers = (std::vector<std::string> *)u;
     headers->push_back(buff);
     return sz * cnt;
 }
 
-size_t curlFuncs::readDataFile(char *buff, size_t sz, size_t cnt, void *u)
+size_t CurlHelper::readDataFile(char *buff, size_t sz, size_t cnt, void *u)
 {
     FILE *in = (FILE *)u;
     return fread(buff, sz, cnt, in);
 }
 
-size_t curlFuncs::writeDataFile(const char *buff, size_t sz, size_t cnt, void *u)
+size_t CurlHelper::writeDataFile(const char *buff, size_t sz, size_t cnt, void *u)
 {
     FILE *f = (FILE *)u;
     return fwrite(buff, sz, cnt, f);
 }
 
-std::string curlFuncs::getHeader(const std::string& name, std::vector<std::string> *h)
+static void stripChar(char _c, std::string& _s)
+{
+    _s.erase(std::remove(_s.begin(), _s.end(), _c), _s.end());
+}
+
+std::string CurlHelper::getHeader(const std::string& name, std::vector<std::string> *h)
 {
     std::string ret = HEADER_ERROR;
     for (unsigned i = 0; i < h->size(); i++)
@@ -62,7 +67,7 @@ std::string curlFuncs::getHeader(const std::string& name, std::vector<std::strin
             break;
         }
     }
-    util::stripChar('\n', ret);
-    util::stripChar('\r', ret);
+    stripChar('\n', ret);
+    stripChar('\r', ret);
     return ret;
 }

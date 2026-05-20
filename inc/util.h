@@ -75,13 +75,6 @@ namespace util
         return str;
     }
 
-    inline void stripChar(char _c, std::string& _s)
-    {
-        size_t pos = 0;
-        while((pos = _s.find(_c)) != _s.npos)
-            _s.erase(pos, 1);
-    }
-
     inline long getFileSize(FILE* file) {
         struct stat st;
         int fd = fileno(file);

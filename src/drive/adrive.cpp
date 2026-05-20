@@ -65,7 +65,7 @@ void drive::adrive::getUserDriveID()
     curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header);
     curl_easy_setopt(curl, CURLOPT_URL, adriveGetDriveInfoURL);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlFuncs::writeDataString);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlHelper::writeDataString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, jsonResp);
 
     CURLcode error = curl_easy_perform(curl);
@@ -110,7 +110,7 @@ void drive::adrive::exhangeAuthCode(const std::string& _authCode)
     curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, postHeader);
     curl_easy_setopt(curl, CURLOPT_URL, adriveTokenURL);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlFuncs::writeDataString);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlHelper::writeDataString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, jsonResp);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_str.c_str());
 
@@ -159,7 +159,7 @@ void drive::adrive::refreshToken()
     curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header);
     curl_easy_setopt(curl, CURLOPT_URL, adriveTokenURL);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlFuncs::writeDataString);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlHelper::writeDataString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, jsonResp);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_str.c_str());
 
@@ -202,7 +202,7 @@ bool drive::adrive::tokenIsValid()
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent);
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlFuncs::writeDataString);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlHelper::writeDataString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, jsonResp);
 
     CURLcode error = curl_easy_perform(curl);
@@ -259,7 +259,7 @@ void drive::adrive::loadDriveList()
         curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent);
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, postHeaders);
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlFuncs::writeDataString);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlHelper::writeDataString);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, jsonResp);
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_str.c_str());
 
@@ -348,7 +348,7 @@ bool drive::adrive::createDir(const std::string& _dirName, const std::string& _p
     curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, postHeaders);
     curl_easy_setopt(curl, CURLOPT_URL, adriveUploadURL);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlFuncs::writeDataString);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlHelper::writeDataString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, jsonResp);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_str.c_str());
 
@@ -411,7 +411,7 @@ void drive::adrive::uploadFile(const std::string& _filename, const std::string& 
     curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, postHeaders);
     curl_easy_setopt(curl, CURLOPT_URL, adriveUploadURL);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlFuncs::writeDataString);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlHelper::writeDataString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, jsonResp);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_str.c_str());
 
@@ -440,7 +440,7 @@ void drive::adrive::uploadFile(const std::string& _filename, const std::string& 
             curl_easy_setopt(curlUp, CURLOPT_CUSTOMREQUEST, "PUT");
             curl_easy_setopt(curlUp, CURLOPT_SSL_VERIFYPEER, 0);
             curl_easy_setopt(curlUp, CURLOPT_URL, uploadURL.c_str());
-            curl_easy_setopt(curlUp, CURLOPT_READFUNCTION, curlFuncs::readDataFile);
+            curl_easy_setopt(curlUp, CURLOPT_READFUNCTION, CurlHelper::readDataFile);
             curl_easy_setopt(curlUp, CURLOPT_READDATA, _upload);
             curl_easy_setopt(curlUp, CURLOPT_UPLOAD_BUFFERSIZE, DRIVE_RT_BUFFER_SIZE);
             curl_easy_setopt(curlUp, CURLOPT_UPLOAD, 1);
@@ -541,7 +541,7 @@ void drive::adrive::downloadFile(const std::string& _fileID, FILE *_download)
     curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, postHeaders);
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlFuncs::writeDataString);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlHelper::writeDataString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, jsonResp);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_str.c_str());
 
@@ -574,7 +574,7 @@ void drive::adrive::downloadFile(const std::string& _fileID, FILE *_download)
             curl_easy_setopt(curlGet, CURLOPT_HTTPHEADER, getHeaders);
             curl_easy_setopt(curlGet, CURLOPT_URL, getURL.c_str());
             curl_easy_setopt(curlGet, CURLOPT_BUFFERSIZE, DRIVE_RT_BUFFER_SIZE);
-            curl_easy_setopt(curlGet, CURLOPT_WRITEFUNCTION, curlFuncs::writeDataFile);
+            curl_easy_setopt(curlGet, CURLOPT_WRITEFUNCTION, CurlHelper::writeDataFile);
             curl_easy_setopt(curlGet, CURLOPT_WRITEDATA, _download);
             curl_easy_perform(curlGet);
             curl_slist_free_all(getHeaders);
@@ -619,7 +619,7 @@ void drive::adrive::deleteFile(const std::string& _fileID)
     curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, postHeaders);
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlFuncs::writeDataString);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlHelper::writeDataString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, jsonResp);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_str.c_str());
 

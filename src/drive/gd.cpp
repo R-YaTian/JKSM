@@ -78,7 +78,7 @@ void drive::gd::exhangeAuthCode(const std::string& _authCode)
     curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, postHeader);
     curl_easy_setopt(curl, CURLOPT_URL, gdTokenURL);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlFuncs::writeDataString);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlHelper::writeDataString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, jsonResp);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_str.c_str());
 
@@ -127,7 +127,7 @@ void drive::gd::refreshToken()
     curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header);
     curl_easy_setopt(curl, CURLOPT_URL, gdTokenURL);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlFuncs::writeDataString);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlHelper::writeDataString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, jsonResp);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_str.c_str());
 
@@ -164,7 +164,7 @@ bool drive::gd::tokenIsValid()
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent);
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlFuncs::writeDataString);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlHelper::writeDataString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, jsonResp);
 
     CURLcode error = curl_easy_perform(curl);
@@ -216,7 +216,7 @@ void drive::gd::loadDriveList()
         curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent);
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, postHeaders);
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlFuncs::writeDataString);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlHelper::writeDataString);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, jsonResp);
 
         CURLcode error = curl_easy_perform(curl);
@@ -310,7 +310,7 @@ bool drive::gd::createDir(const std::string& _dirName, const std::string& _paren
     curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, postHeaders);
     curl_easy_setopt(curl, CURLOPT_URL, gdriveURL);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlFuncs::writeDataString);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlHelper::writeDataString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, jsonResp);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_str.c_str());
 
@@ -377,7 +377,7 @@ void drive::gd::uploadFile(const std::string& _filename, const std::string& _par
     curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, postHeaders);
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, curlFuncs::writeHeaders);
+    curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, CurlHelper::writeHeaders);
     curl_easy_setopt(curl, CURLOPT_HEADERDATA, headers);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_str.c_str());
 
@@ -387,7 +387,7 @@ void drive::gd::uploadFile(const std::string& _filename, const std::string& _par
 
     if (error == CURLE_OK)
     {
-        std::string location = curlFuncs::getHeader("Location", headers);
+        std::string location = CurlHelper::getHeader("Location", headers);
         if (location != HEADER_ERROR)
         {
             CURL *curlUp = curl_easy_init();
@@ -399,9 +399,9 @@ void drive::gd::uploadFile(const std::string& _filename, const std::string& _par
             curl_easy_setopt(curlUp, CURLOPT_CUSTOMREQUEST, "PUT");
             curl_easy_setopt(curlUp, CURLOPT_SSL_VERIFYPEER, 0);
             curl_easy_setopt(curlUp, CURLOPT_URL, location.c_str());
-            curl_easy_setopt(curlUp, CURLOPT_WRITEFUNCTION, curlFuncs::writeDataString);
+            curl_easy_setopt(curlUp, CURLOPT_WRITEFUNCTION, CurlHelper::writeDataString);
             curl_easy_setopt(curlUp, CURLOPT_WRITEDATA, jsonResp);
-            curl_easy_setopt(curlUp, CURLOPT_READFUNCTION, curlFuncs::readDataFile);
+            curl_easy_setopt(curlUp, CURLOPT_READFUNCTION, CurlHelper::readDataFile);
             curl_easy_setopt(curlUp, CURLOPT_READDATA, _upload);
             curl_easy_setopt(curlUp, CURLOPT_UPLOAD_BUFFERSIZE, DRIVE_RT_BUFFER_SIZE);
             curl_easy_setopt(curlUp, CURLOPT_UPLOAD, 1);
@@ -458,8 +458,8 @@ void drive::gd::updateFile(const std::string& _fileID, FILE *_upload)
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, patchHeader);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, userAgent);
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlFuncs::writeDataString);
-    curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, curlFuncs::writeHeaders);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlHelper::writeDataString);
+    curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, CurlHelper::writeHeaders);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, jsonResp);
     curl_easy_setopt(curl, CURLOPT_HEADERDATA, headers);
 
@@ -469,7 +469,7 @@ void drive::gd::updateFile(const std::string& _fileID, FILE *_upload)
 
     if(error == CURLE_OK)
     {
-        std::string location = curlFuncs::getHeader("Location", headers);
+        std::string location = CurlHelper::getHeader("Location", headers);
         if (location != HEADER_ERROR) {
             CURL *curlPatch = curl_easy_init();
             if (!proxyURL.empty())
@@ -480,7 +480,7 @@ void drive::gd::updateFile(const std::string& _fileID, FILE *_upload)
             curl_easy_setopt(curlPatch, CURLOPT_CUSTOMREQUEST, "PUT");
             curl_easy_setopt(curlPatch, CURLOPT_SSL_VERIFYPEER, 0);
             curl_easy_setopt(curlPatch, CURLOPT_URL, location.c_str());
-            curl_easy_setopt(curlPatch, CURLOPT_READFUNCTION, curlFuncs::readDataFile);
+            curl_easy_setopt(curlPatch, CURLOPT_READFUNCTION, CurlHelper::readDataFile);
             curl_easy_setopt(curlPatch, CURLOPT_READDATA, _upload);
             curl_easy_setopt(curlPatch, CURLOPT_UPLOAD_BUFFERSIZE, DRIVE_RT_BUFFER_SIZE);
             curl_easy_setopt(curlPatch, CURLOPT_UPLOAD, 1);
@@ -520,7 +520,7 @@ void drive::gd::downloadFile(const std::string& _fileID, FILE *_download)
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, getHeaders);
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, DRIVE_RT_BUFFER_SIZE);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlFuncs::writeDataFile);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlHelper::writeDataFile);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, _download);
     curl_easy_perform(curl);
     curl_slist_free_all(getHeaders);

@@ -19,7 +19,7 @@
 #pragma once
 
 #include "drive/IDrive.h"
-#include "drive/curlfuncs.h"
+#include "drive/curlhelper.h"
 
 namespace drive
 {
