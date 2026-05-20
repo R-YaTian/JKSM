@@ -318,7 +318,7 @@ static void setMenuSaveCommon(void *a)
     t->status->setStatus(getText("正在保存设置..."));
     cfg::saveCommon();
     if (sconfig["cheatdblang"] != cfg::config["cheatdblang"] &&
-        !util::fexists("/TYSS/cheats.json") && CheatManager::getInstance().cheats())
+        !fs::fexists("/TYSS/cheats.json") && CheatManager::getInstance().cheats())
         CheatManager::getInstance().reset();
     sconfig = cfg::config;
     svcSleepThread(1e+9 / 4);
@@ -451,7 +451,7 @@ void ui::setInit(void *a)
     setMenu.addOptEvent(9, KEY_A, setMenuToggleBOOL, &cfg::config["swaplrfunc"]);
 
 #ifdef ENABLE_DRIVE
-    if(util::fexists("/TYSS/drive.json"))
+    if(fs::fexists("/TYSS/drive.json"))
     {
         setMenu.addOpt(getText("云端存储服务随软件启动"), 320);
         setMenu.addOptEvent(setMenu.getCount() - 1, KEY_A, setMenuToggleDriveBOOL, &cfg::driveInitOnBoot);
@@ -548,7 +548,7 @@ void ui::setUpdate()
         setMenu.editOpt(8, getText("GBAVC存档备份成功时保留原始数据") + std::string(": ") + getBoolText(cfg::config["rawvcsave"]));
         setMenu.editOpt(9, getText("切换LR按键功能") + std::string(": ") + getBoolText(cfg::config["swaplrfunc"]));
 #ifdef ENABLE_DRIVE
-        if(util::fexists("/TYSS/drive.json"))
+        if(fs::fexists("/TYSS/drive.json"))
             setMenu.editOpt(setMenu.getCount() - 2, getText("云端存储服务随软件启动") + std::string(": ") + getBoolText(cfg::driveInitOnBoot));
 #endif
 
@@ -609,7 +609,7 @@ void ui::setDrawBottom()
                 break;
         }
 #ifdef ENABLE_DRIVE
-        if(util::fexists("/TYSS/drive.json"))
+        if(fs::fexists("/TYSS/drive.json"))
         {
             if ((unsigned) setMenu.getSelected() == setMenu.getCount() - 2)
                 setOptsDesc = getText("云端存储服务是否随软件启动并加载云端存储列表。\n这可能导致应用程序启动耗时增加。");

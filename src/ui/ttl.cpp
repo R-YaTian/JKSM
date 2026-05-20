@@ -193,7 +193,7 @@ static void ttlOptManageCheats_t(void *a)
     if (!CheatManager::getInstance().cheats())
         data::loadCheatsDB(a);
 
-    if (util::fexists("/cheats/" + key + ".txt")) {
+    if (fs::fexists("/cheats/" + key + ".txt")) {
         std::string q = getTxt("该应用的金手指文件已安装, 是否删除?");
         ui::confirm(q, ttlOptDeleteCheats_t, NULL, NULL);
     } else if (CheatManager::getInstance().areCheatsAvailable(key)) {

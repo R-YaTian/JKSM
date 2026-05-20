@@ -22,6 +22,7 @@
 #include <cstring>
 #include <cstdarg>
 
+#include "ctr/agb.h"
 #include "fs.h"
 #include "util.h"
 #include "ui.h"
@@ -159,8 +160,15 @@ void fs::driveInit(void *a)
 
 void fs::driveExit()
 {
-    if(netDrive)
+    if (netDrive)
+    {
+        if (cfg::driveRefreshToken != netDrive->getRefreshToken())
+        {
+            cfg::driveRefreshToken = netDrive->getRefreshToken();
+            cfg::saveDrive();
+        }
         netDrive.reset();
+    }
 }
 #endif
 
@@ -357,7 +365,7 @@ void fs::importSv(const uint32_t& mode, const std::u16string& _src, const data::
         && mode != ARCHIVE_SHARED_EXTDATA
         && mode != ARCHIVE_NAND_TWL_FS)
     {
-        if (!fsfexists(getSDMCArch(), _src)) return; // do nothing if not found
+        if (!fexists(getSDMCArch(), _src)) return; // do nothing if not found
         fs::fsfile src(getSDMCArch(), _src, FS_OPEN_READ);
         u64 value = 0;
         src.read(&value, sizeof(u64));
@@ -371,7 +379,7 @@ void fs::importSv(const uint32_t& mode, const std::u16string& _src, const data::
     }
 }
 
-bool fs::fsfexists(const FS_Archive& _arch, const std::string& _path)
+bool fs::fexists(const FS_Archive& _arch, const std::string& _path)
 {
     Handle tmp;
     FS_Path testPath = fsMakePath(PATH_ASCII, _path.c_str());
@@ -380,13 +388,18 @@ bool fs::fsfexists(const FS_Archive& _arch, const std::string& _path)
     return R_SUCCEEDED(res);
 }
 
-bool fs::fsfexists(const FS_Archive& _arch, const std::u16string& _path)
+bool fs::fexists(const FS_Archive& _arch, const std::u16string& _path)
 {
     Handle tmp;
     FS_Path testPath = fsMakePath(PATH_UTF16, _path.c_str());
     Result res = FSUSER_OpenFile(&tmp, _arch, testPath, FS_OPEN_READ, 0);
     FSFILE_Close(tmp);
     return R_SUCCEEDED(res);
+}
+
+bool fs::fexists(const std::string& path)
+{
+    return fexists(getSDMCArch(), path);
 }
 
 void fs::resetPxiFile(const FS_Archive& _arch)
@@ -1176,8 +1189,8 @@ bool fs::pxiFileToSaveFile(const std::u16string& _dst)
     static constexpr u8 FULL_FS[0x20] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
                     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
                     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-    std::unique_ptr<crypto::AGBSaveHeader> header1 = std::make_unique<crypto::AGBSaveHeader>();
-    in.read(header1.get(), sizeof(crypto::AGBSaveHeader));
+    std::unique_ptr<AGBSaveHeader> header1 = std::make_unique<AGBSaveHeader>();
+    in.read(header1.get(), sizeof(AGBSaveHeader));
     if (!memcmp(header1.get(), FULL_FS, sizeof(FULL_FS)))
     {
         // If the first header is garbage FF, we have to search for the second. It can
@@ -1194,9 +1207,9 @@ bool fs::pxiFileToSaveFile(const std::u16string& _dst)
         for (const auto& size : POSSIBLE_SAVE_SIZES)
         {
             // Go to the possible offset
-            in.seek(size + sizeof(crypto::AGBSaveHeader), fs::seek_set);
+            in.seek(size + sizeof(AGBSaveHeader), fs::seek_set);
             // Read what may be a header
-            in.read(header1.get(), sizeof(crypto::AGBSaveHeader));
+            in.read(header1.get(), sizeof(AGBSaveHeader));
             // If it's a header, we found it! Break.
             if (!memcmp(header1->magic, ".SAV", 4))
             {
@@ -1223,7 +1236,7 @@ bool fs::pxiFileToSaveFile(const std::u16string& _dst)
                 memcpy(&a7RegistersValue, header1->arm7Registers, 8);
                 data = std::shared_ptr<u8[]>(new u8[size]);
                 // Always 0x200 after the second header
-                in.seek(sizeof(crypto::AGBSaveHeader) * 2 + size, fs::seek_set);
+                in.seek(sizeof(AGBSaveHeader) * 2 + size, fs::seek_set);
                 in.read(data.get(), size);
                 in.close();
             }
@@ -1239,9 +1252,9 @@ bool fs::pxiFileToSaveFile(const std::u16string& _dst)
     // Both headers are initialized. Compare CMACs and such
     else
     {
-        std::unique_ptr<crypto::AGBSaveHeader> header2 = std::make_unique<crypto::AGBSaveHeader>();
+        std::unique_ptr<AGBSaveHeader> header2 = std::make_unique<AGBSaveHeader>();
         in.seek(header1->saveSize, fs::seek_cur);
-        in.read(header2.get(), sizeof(crypto::AGBSaveHeader));
+        in.read(header2.get(), sizeof(AGBSaveHeader));
 
         // Check the first CMAC
         in.seek(0, fs::seek_set);
@@ -1250,7 +1263,7 @@ bool fs::pxiFileToSaveFile(const std::u16string& _dst)
         bool firstInvalid       = (bool)memcmp(cmac.data(), header1->cmac, cmac.size());
 
         // Check the second CMAC
-        in.seek(sizeof(crypto::AGBSaveHeader) + header1->saveSize, fs::seek_set);
+        in.seek(sizeof(AGBSaveHeader) + header1->saveSize, fs::seek_set);
         hash               = crypto::calcAGBSaveSHA256(in, header2->saveSize);
         cmac               = crypto::calcAGBSaveCMAC(fsPxiHandle, in.getHandle(), hash);
         bool secondInvalid = (bool)memcmp(cmac.data(), header2->cmac, cmac.size());
@@ -1270,7 +1283,7 @@ bool fs::pxiFileToSaveFile(const std::u16string& _dst)
                 memcpy(&a7RegistersValue, header2->arm7Registers, 8);
                 data = std::shared_ptr<u8[]>(new u8[size]);
                 // Always 0x200 after the second header
-                in.seek(sizeof(crypto::AGBSaveHeader) * 2 + size, fs::seek_set);
+                in.seek(sizeof(AGBSaveHeader) * 2 + size, fs::seek_set);
                 in.read(data.get(), size);
                 in.close();
             }
@@ -1284,7 +1297,7 @@ bool fs::pxiFileToSaveFile(const std::u16string& _dst)
                 memcpy(&a7RegistersValue, header1->arm7Registers, 8);
                 data = std::shared_ptr<u8[]>(new u8[size]);
                 // Always 0x200 after the first header
-                in.seek(sizeof(crypto::AGBSaveHeader), fs::seek_set);
+                in.seek(sizeof(AGBSaveHeader), fs::seek_set);
                 in.read(data.get(), size);
                 in.close();
             }
@@ -1299,7 +1312,7 @@ bool fs::pxiFileToSaveFile(const std::u16string& _dst)
                     memcpy(&a7RegistersValue, header2->arm7Registers, 8);
                     data = std::shared_ptr<u8[]>(new u8[size]);
                     // Always 0x200 after the second header
-                    in.seek(sizeof(crypto::AGBSaveHeader) * 2 + size, fs::seek_set);
+                    in.seek(sizeof(AGBSaveHeader) * 2 + size, fs::seek_set);
                     in.read(data.get(), size);
                     in.close();
                 }
@@ -1309,7 +1322,7 @@ bool fs::pxiFileToSaveFile(const std::u16string& _dst)
                     memcpy(&a7RegistersValue, header1->arm7Registers, 8);
                     data = std::shared_ptr<u8[]>(new u8[size]);
                     // Always 0x200 after the first header
-                    in.seek(sizeof(crypto::AGBSaveHeader), fs::seek_set);
+                    in.seek(sizeof(AGBSaveHeader), fs::seek_set);
                     in.read(data.get(), size);
                     in.close();
                 }
@@ -1354,7 +1367,7 @@ bool fs::saveFileToPxiFile(const std::u16string& _src)
     std::u16string svPath = util::removeSuffix(_src, util::toUtf16(".sav")) + util::toUtf16(".sv");
     bool svFileFound = false;
 
-    if (fsfexists(getSDMCArch(), svPath))
+    if (fexists(getSDMCArch(), svPath))
     {
         fs::fsfile svFile(getSDMCArch(), svPath, FS_OPEN_READ);
         svFile.read(&a7RegistersValue, sizeof(u64));
@@ -1375,8 +1388,8 @@ bool fs::saveFileToPxiFile(const std::u16string& _src)
     static constexpr u8 FULL_FS[0x20] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
                     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
                     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-    std::unique_ptr<crypto::AGBSaveHeader> header1 = std::make_unique<crypto::AGBSaveHeader>();
-    out.read(header1.get(), sizeof(crypto::AGBSaveHeader));
+    std::unique_ptr<AGBSaveHeader> header1 = std::make_unique<AGBSaveHeader>();
+    out.read(header1.get(), sizeof(AGBSaveHeader));
     // If the top save is uninitialized, grab the bottom save's
     // header and copy it to the top's. Then write data
     if (!memcmp(header1.get(), FULL_FS, sizeof(FULL_FS)))
@@ -1393,9 +1406,9 @@ bool fs::saveFileToPxiFile(const std::u16string& _src)
         for (const auto& size : POSSIBLE_SAVE_SIZES)
         {
             // Go to the possible offset
-            out.seek(size + sizeof(crypto::AGBSaveHeader), fs::seek_set);
+            out.seek(size + sizeof(AGBSaveHeader), fs::seek_set);
             // Read what may be a header
-            out.read(header1.get(), sizeof(crypto::AGBSaveHeader));
+            out.read(header1.get(), sizeof(AGBSaveHeader));
             // If it's a header, we found it! Break.
             if (!memcmp(header1->magic, ".SAV", 4))
             {
@@ -1411,13 +1424,13 @@ bool fs::saveFileToPxiFile(const std::u16string& _src)
             // Increment save count
             header1->savesMade++;
             if (svFileFound) memcpy(header1->arm7Registers, &a7RegistersValue, 8);
-            out.write(header1.get(), sizeof(crypto::AGBSaveHeader));
+            out.write(header1.get(), sizeof(AGBSaveHeader));
             out.write(buffer, savSize);
 
             out.seek(0, fs::seek_set);
             std::array<u8, 32> hash = crypto::calcAGBSaveSHA256(out, header1->saveSize);
             std::array<u8, 16> cmac = crypto::calcAGBSaveCMAC(fsPxiHandle, out.getHandle(), hash);
-            out.seek(offsetof(crypto::AGBSaveHeader, cmac), fs::seek_set);
+            out.seek(offsetof(AGBSaveHeader, cmac), fs::seek_set);
             out.write(cmac.data(), cmac.size());
             out.close();
             return true;
@@ -1428,9 +1441,9 @@ bool fs::saveFileToPxiFile(const std::u16string& _src)
     // the bottom, save in the top
     else
     {
-        std::unique_ptr<crypto::AGBSaveHeader> header2 = std::make_unique<crypto::AGBSaveHeader>();
+        std::unique_ptr<AGBSaveHeader> header2 = std::make_unique<AGBSaveHeader>();
         out.seek(header1->saveSize, fs::seek_cur);
-        out.read(header2.get(), sizeof(crypto::AGBSaveHeader));
+        out.read(header2.get(), sizeof(AGBSaveHeader));
 
         // Check the first CMAC
         out.seek(0, fs::seek_set);
@@ -1439,7 +1452,7 @@ bool fs::saveFileToPxiFile(const std::u16string& _src)
         bool firstInvalid = (bool)memcmp(cmac.data(), header1->cmac, cmac.size());
 
         // Check the second CMAC
-        out.seek(sizeof(crypto::AGBSaveHeader) + header1->saveSize, fs::seek_set);
+        out.seek(sizeof(AGBSaveHeader) + header1->saveSize, fs::seek_set);
         hash = crypto::calcAGBSaveSHA256(out, header2->saveSize);
         cmac = crypto::calcAGBSaveCMAC(fsPxiHandle, out.getHandle(), hash);
         bool secondInvalid = (bool)memcmp(cmac.data(), header2->cmac, cmac.size());
@@ -1452,13 +1465,13 @@ bool fs::saveFileToPxiFile(const std::u16string& _src)
             header2->savesMade++;
             out.seek(0, fs::seek_set);
             if (svFileFound) memcpy(header2->arm7Registers, &a7RegistersValue, 8);
-            out.write(header2.get(), sizeof(crypto::AGBSaveHeader));
+            out.write(header2.get(), sizeof(AGBSaveHeader));
             out.write(buffer, savSize);
             out.seek(0, fs::seek_set);
 
             hash = crypto::calcAGBSaveSHA256(out, header2->saveSize);
             cmac = crypto::calcAGBSaveCMAC(fsPxiHandle, out.getHandle(), hash);
-            out.seek(offsetof(crypto::AGBSaveHeader, cmac), fs::seek_set);
+            out.seek(offsetof(AGBSaveHeader, cmac), fs::seek_set);
             out.write(cmac.data(), cmac.size());
             out.close();
             return true;
@@ -1473,13 +1486,13 @@ bool fs::saveFileToPxiFile(const std::u16string& _src)
                 header1->savesMade = header2->savesMade + 1;
                 out.seek(0, fs::seek_set);
                 if (svFileFound) memcpy(header1->arm7Registers, &a7RegistersValue, 8);
-                out.write(header1.get(), sizeof(crypto::AGBSaveHeader));
+                out.write(header1.get(), sizeof(AGBSaveHeader));
                 out.write(buffer, savSize);
                 out.seek(0, fs::seek_set);
 
                 hash = crypto::calcAGBSaveSHA256(out, header1->saveSize);
                 cmac = crypto::calcAGBSaveCMAC(fsPxiHandle, out.getHandle(), hash);
-                out.seek(offsetof(crypto::AGBSaveHeader, cmac), fs::seek_set);
+                out.seek(offsetof(AGBSaveHeader, cmac), fs::seek_set);
                 out.write(cmac.data(), cmac.size());
                 out.close();
                 return true;
@@ -1487,16 +1500,16 @@ bool fs::saveFileToPxiFile(const std::u16string& _src)
             // Otherwise, save over the second save
             else
             {
-                out.seek(sizeof(crypto::AGBSaveHeader) + header1->saveSize, fs::seek_set);
+                out.seek(sizeof(AGBSaveHeader) + header1->saveSize, fs::seek_set);
                 header1->savesMade++;
                 if (svFileFound) memcpy(header1->arm7Registers, &a7RegistersValue, 8);
-                out.write(header1.get(), sizeof(crypto::AGBSaveHeader));
+                out.write(header1.get(), sizeof(AGBSaveHeader));
                 out.write(buffer, savSize);
-                out.seek(sizeof(crypto::AGBSaveHeader) + header1->saveSize, fs::seek_set);
+                out.seek(sizeof(AGBSaveHeader) + header1->saveSize, fs::seek_set);
 
                 hash = crypto::calcAGBSaveSHA256(out, header1->saveSize);
                 cmac = crypto::calcAGBSaveCMAC(fsPxiHandle, out.getHandle(), hash);
-                out.seek(sizeof(crypto::AGBSaveHeader) + header1->saveSize + offsetof(crypto::AGBSaveHeader, cmac), fs::seek_set);
+                out.seek(sizeof(AGBSaveHeader) + header1->saveSize + offsetof(AGBSaveHeader, cmac), fs::seek_set);
                 out.write(cmac.data(), cmac.size());
                 out.close();
                 return true;

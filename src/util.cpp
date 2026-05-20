@@ -229,16 +229,3 @@ bool util::touchPressed(const touchPosition &p)
 {
     return p.px != 0 && p.py != 0;
 }
-
-bool util::fexists(const std::string &path)
-{
-    bool ret = false;
-    Handle tmp;
-    Result res = FSUSER_OpenFile(&tmp, fs::getSDMCArch(), fsMakePath(PATH_ASCII, path.c_str()), FS_OPEN_READ, 0);
-
-    if (R_SUCCEEDED(res))
-        ret = true;
-
-    FSFILE_Close(tmp);
-    return ret;
-}

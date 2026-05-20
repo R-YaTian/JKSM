@@ -42,13 +42,19 @@
  *         reasonable ways as different from the original version.
  */
 
-#include "util.h"
+#include "fs.h"
+#include "cfg.h"
 #include "cheatmanager.h"
+
+#include <minizip/unzip.h>
+#include <jtjson.h>
 
 CheatManager::CheatManager(void)
 {
     mCheats = nullptr;
 }
+
+CheatManager::~CheatManager() = default;
 
 bool CheatManager::areCheatsAvailable(const std::string& key)
 {
@@ -90,7 +96,7 @@ bool CheatManager::install(const std::string& key)
 void CheatManager::init()
 {
     const std::string path = "/TYSS/cheats.json";
-    if (util::fexists(path)) {
+    if (fs::fexists(path)) {
         FILE* in               = fopen(path.c_str(), "rt");
         if (in != NULL) {
             mCheats = std::make_shared<jt::Json>(jt::Json::parse(in, true));

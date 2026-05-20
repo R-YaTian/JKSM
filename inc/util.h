@@ -47,8 +47,6 @@ namespace util
 
     bool touchPressed(const touchPosition& p);
 
-    bool fexists(const std::string& path);
-
     template <typename CharT>
     inline CharT asciiToLower(CharT ch) {
         return (ch >= CharT('A') && ch <= CharT('Z')) ? ch + CharT(32) : ch;

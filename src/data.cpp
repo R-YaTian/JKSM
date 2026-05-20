@@ -776,7 +776,7 @@ void data::deleteExtData(void *a)
 void data::loadBlacklist()
 {
     blacklist.clear();
-    if(util::fexists(blPath))
+    if(fs::fexists(blPath))
     {
         fs::fsfile bl(fs::getSDMCArch(), blPath, FS_OPEN_READ);
 
@@ -876,7 +876,7 @@ void data::clearBlacklist(void *a)
 
 void data::loadFav()
 {
-    if(util::fexists(favPath))
+    if(fs::fexists(favPath))
     {
         char line[64];
         fs::fsfile fav(fs::getSDMCArch(), favPath, FS_OPEN_READ);
@@ -1064,7 +1064,7 @@ void data::createCache(std::vector<titleData>& vect, const std::string& path)
 
 bool data::readCache(std::vector<titleData>& vect, const std::string& path)
 {
-    if(!util::fexists(path))
+    if(!fs::fexists(path))
         return false;
 
     fs::fsfile cache(fs::getSDMCArch(), path, FS_OPEN_READ);

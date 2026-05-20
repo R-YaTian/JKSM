@@ -80,8 +80,9 @@ namespace fs
     void exportSv(const uint32_t& mode, const std::u16string& _dst, const data::titleData& dat);
     void importSv(const uint32_t& mode, const std::u16string& _src, const data::titleData& dat);
 
-    bool fsfexists(const FS_Archive& _arch, const std::string& _path);
-    bool fsfexists(const FS_Archive& _arch, const std::u16string& _path);
+    bool fexists(const std::string& path);
+    bool fexists(const FS_Archive& _arch, const std::string& _path);
+    bool fexists(const FS_Archive& _arch, const std::u16string& _path);
     inline void fcreate(const std::string& path){ FSUSER_CreateFile(fs::getSDMCArch(), fsMakePath(PATH_ASCII, path.c_str()), 0, 0); }
     inline void fdelete(const std::string& path){ FSUSER_DeleteFile(fs::getSDMCArch(), fsMakePath(PATH_ASCII, path.c_str())); }
     void resetPxiFile(const FS_Archive& _arch);

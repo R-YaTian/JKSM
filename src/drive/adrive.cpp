@@ -21,7 +21,6 @@
 
 #include "drive/adrive.h"
 #include "util.h"
-#include "cfg.h"
 
 #define adriveTokenURL "https://openapi.alipan.com/oauth/access_token"
 #define adriveGetUserInfoURL "https://openapi.alipan.com/oauth/users/info"
@@ -177,7 +176,6 @@ void drive::adrive::refreshToken()
             if (rToken != respParse["refresh_token"].get<std::string>())
             {
                 rToken = respParse["refresh_token"].get<std::string>();
-                cfg::saveDrive();
             }
         }
     }

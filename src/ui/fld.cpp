@@ -277,7 +277,7 @@ void fldMenuUpload_t(void *a)
 
     // Upload sv file (if found)
     std::u16string srcSV = targetDir + util::removeSuffix(in->name, util::toUtf16(".sav")) + util::toUtf16(".sv");
-    if (fs::fsfexists(fs::getSDMCArch(), srcSV))
+    if (fs::fexists(fs::getSDMCArch(), srcSV))
     {
         std::string utf8NameSV = util::removeSuffix(utf8Name, std::string(".sav")) + ".sv";
         t->status->setStatus(getTxt("正在上传 ") + utf8NameSV + "...");
@@ -329,7 +329,7 @@ void fldMenuDriveDownload_t(void *a)
     FS_Path targetPath = fsMakePath(PATH_UTF16, target.c_str());
     FS_Path tmpPath = fsMakePath(PATH_ASCII, "/TYSS/tmp.zip");
 
-    if (fs::fsfexists(fs::getSDMCArch(), target))
+    if (fs::fexists(fs::getSDMCArch(), target))
         FSUSER_DeleteFile(fs::getSDMCArch(), fsMakePath(PATH_UTF16, target.c_str()));
 
     FILE *tmp = fopen("/TYSS/tmp.zip", "wb");
@@ -347,7 +347,7 @@ void fldMenuDriveDownload_t(void *a)
         FS_Path targetPathSV = fsMakePath(PATH_UTF16, targetSV.c_str());
         FS_Path tmpPathSV = fsMakePath(PATH_ASCII, "/TYSS/tmp.sv");
 
-        if (fs::fsfexists(fs::getSDMCArch(), targetSV))
+        if (fs::fexists(fs::getSDMCArch(), targetSV))
             FSUSER_DeleteFile(fs::getSDMCArch(), fsMakePath(PATH_UTF16, targetSV.c_str()));
 
         tmp = fopen("/TYSS/tmp.sv", "wb");
@@ -366,7 +366,7 @@ void fldMenuDriveDownload(void *a)
 {
     drive::driveItem *in = (drive::driveItem *)a;
     std::u16string checkPath = targetDir + util::toUtf16(in->name);
-    if (fs::fsfexists(fs::getSDMCArch(), checkPath))
+    if (fs::fexists(fs::getSDMCArch(), checkPath))
         ui::confirm(getTxt("下载此存档将会替换 SD 卡中的数据.\n你确定仍要进行下载吗?"), fldMenuDriveDownload_t, NULL, a);
     else
         ui::newThread(fldMenuDriveDownload_t, a, NULL);

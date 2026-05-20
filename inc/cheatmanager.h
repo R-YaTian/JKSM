@@ -45,13 +45,13 @@
 #ifndef CHEATMANAGER_H
 #define CHEATMANAGER_H
 
-#include "fs.h"
-
 #include <memory>
-#include <jtjson.h>
-#include <3ds.h>
-#include <stdio.h>
-#include <sys/stat.h>
+#include <string>
+
+namespace jt
+{
+    class Json;
+}
 
 class CheatManager {
 public:
@@ -72,7 +72,7 @@ public:
 
 private:
     CheatManager(void);
-    ~CheatManager() = default;
+    ~CheatManager();
 
     CheatManager(CheatManager const&) = delete;
     void operator=(CheatManager const&) = delete;
